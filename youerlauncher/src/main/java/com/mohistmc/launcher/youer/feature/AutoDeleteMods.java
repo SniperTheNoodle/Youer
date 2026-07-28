@@ -5,11 +5,14 @@ import com.mohistmc.launcher.youer.util.I18n;
 import com.mohistmc.launcher.youer.util.JarLoader;
 import com.mohistmc.launcher.youer.util.JarModifier;
 import com.mohistmc.tools.FileUtils;
+import com.mohistmc.tools.OSUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +28,7 @@ public class AutoDeleteMods {
      * Value: Reason for deletion
      */
     private static final Map<String, DeletionReason> MOD_BLACKLIST = new HashMap<>() {{
-            put("org.spongepowered.common.applaunch.AppLaunch", DeletionReason.CORE_CONFLICT);
+        put("org.spongepowered.common.applaunch.AppLaunch", DeletionReason.CORE_CONFLICT);
         //put("me.wesley1808.servercore.common.ServerCore", DeletionReason.DUPLICATE_FEATURE);
         put("i18nupdatemod.I18nUpdateMod", DeletionReason.CLIENT_ONLY);
         put("dev.tr7zw.skinlayers.SkinLayersMod", DeletionReason.CLIENT_ONLY);
@@ -65,7 +68,7 @@ public class AutoDeleteMods {
         put("com.wfphantom.stfudisconnect.STFUDisconnect", DeletionReason.DUPLICATE_FEATURE);
     }};
 
-       private static final String END = OSUtil.getOS().isWindows() ? ";" : ":";
+    private static final String END = OSUtil.getOS().isWindows() ? ";" : ":";
     private static final String ZSTD = "libraries/com/github/luben/zstd-jni/1.5.7-8/zstd-jni-1.5.7-8.jar" + END;
     private static final String MYSQL = "libraries/com/mysql/mysql-connector-j/8.4.0/mysql-connector-j-8.4.0.jar" + END;
     private static final String SQLITE = "libraries/org/xerial/sqlite-jdbc/3.46.0.0/sqlite-jdbc-3.46.0.0.jar" + END;
@@ -79,9 +82,9 @@ public class AutoDeleteMods {
             new AbstractMap.SimpleEntry<>("com.daqem.grieflogger.neoforge.GriefLoggerNeoForge", SQLITE),
             new AbstractMap.SimpleEntry<>("com.daqem.grieflogger.neoforge.GriefLoggerNeoForge", PROTOBUF),
             new AbstractMap.SimpleEntry<>("me.cortex.voxy.Voxy", SQLITE),
-            new AbstractMap.SimpleEntry<>("io.github.catt1eyaa.ChronoVault", ZSTD)
+            new AbstractMap.SimpleEntry<>("io.github.catt1eyaa.ChronoVault", ZSTD),
             new AbstractMap.SimpleEntry<>("TheAmirtini.coreprotectneo.Coreprotectneo", SQLITE)
-    }};
+    );
 
     /**
      * Mapping tables for classes to directories
@@ -204,8 +207,12 @@ public class AutoDeleteMods {
         }
     }
 
+    public static List<Map.Entry<String, String>> getAllBlacklistEntries() {
+        return new ArrayList<>(LIB_BLACKLIST);
+    }
+
     public static void syncLibBlacklistToJarLoader() {
-        for (Map.Entry<String, String> entry : LIB_BLACKLIST.entrySet()) {
+        for (Map.Entry<String, String> entry : getAllBlacklistEntries()) {
             String className = entry.getKey();
             String jarName = entry.getValue();
 
